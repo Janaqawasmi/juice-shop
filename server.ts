@@ -125,6 +125,7 @@ import { serveCodeSnippet, checkVulnLines } from './routes/vulnCodeSnippet'
 import { orderHistory, allOrders, toggleDeliveryStatus } from './routes/orderHistory'
 import { continueCode, continueCodeFindIt, continueCodeFixIt } from './routes/continueCode'
 import { ensureFileIsPassed, handleZipFileUpload, checkUploadSize, checkFileType, handleXmlUpload, handleYamlUpload } from './routes/fileUpload'
+import currencyArbitrage from './routes/currencyArbitrage'
 
 const app = express()
 const server = new http.Server(app)
@@ -638,6 +639,9 @@ restoreOverwrittenFilesWithOriginals().then(() => {
 
   /* B2B Order API */
   app.post('/b2b/v2/orders', b2bOrder())
+
+  /* Currency Arbitrage API */
+  app.use('/api', currencyArbitrage)
 
   /* File Serving */
   app.get('/the/devs/are/so/funny/they/hid/an/easter/egg/within/the/easter/egg', serveEasterEgg())
