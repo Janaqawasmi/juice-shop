@@ -1,4 +1,7 @@
 import { Router, Request, Response } from 'express'
+import * as challengeUtils from '../lib/challengeUtils'
+import { challenges } from '../data/datacache'
+import * as utils from '../lib/utils'
 
 const router = Router()
 
@@ -61,6 +64,11 @@ router.post('/exchange', (req: Request, res: Response) => {
     w.usd = round2(w.usd + received)
   }
 
+  // mark challenge solved when wallet profit is achieved
+  challengeUtils.solveIf(challenges.currencyRoundingArbitrageChallenge, () => {
+    return utils.isChallengeEnabled(challenges.currencyRoundingArbitrageChallenge) && (w.usd - w.initialUsd) >= 0.05
+  })
+
   res.json({ message: 'exchanged', received, wallet: w })
 })
 
@@ -83,6 +91,11 @@ router.post('/refund', (req: Request, res: Response) => {
 
   if (currency === 'USD') w.usd = round2(w.usd + credited)
   else w.eur = round2(w.eur + credited)
+
+  // mark challenge solved when wallet profit is achieved
+  challengeUtils.solveIf(challenges.currencyRoundingArbitrageChallenge, () => {
+    return utils.isChallengeEnabled(challenges.currencyRoundingArbitrageChallenge) && (w.usd - w.initialUsd) >= 0.05
+  })
 
   res.json({ message: 'refunded', credited, wallet: w })
 })
